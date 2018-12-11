@@ -1,141 +1,187 @@
-var EXTRA_FILES = [
-  "/xjs/_/js/k=xjs.ntp.en_US.sEdg4N_TvlU.O/m=sx,jsa,ntp,d,csi/am=QAyKTAE/rt=j/d=1/rs=ACT90oGKXh9aMNJSt_9zlvyitqb7wPl6TA",
-];
-var CHECKSUM = "5qhcx7";
+var pegusImgs = [];
+var levelImgs = [];
+var level = 1;
+var won;
+var stee = [];
+var steeImg;
+var showStee = false;
 
-var BLACKLIST = [
-  '/gen_204\?',
-  '/async/',
-  '/complete/',
-];
-
-var FILES = [
-          '/' +
-  '/ssl.gstatic.com/chrome/components/doodle-notifier-01.html'
-].concat(EXTRA_FILES || []);
-
-var CACHENAME = 'newtab-static-' + CHECKSUM;
-
-self.addEventListener('install', function(event) {
-  event.waitUntil(caches.open(CACHENAME).then(function(cache) {
-    return cache.addAll(FILES);
-  }));
-});
-
-self.addEventListener('activate', function(event) {
-    return event.waitUntil(caches.keys().then(function(keys) {
-    return Promise.all(keys.map(function(k) {
-      if (k != CACHENAME && k.indexOf('newtab-static-') == 0) {
-        return caches.delete(k);
-      } else {
-        return Promise.resolve();
-      }
-    }));
-  }));
-});
-
-self.addEventListener('fetch', function(event) {
-  event.respondWith(
-      caches.match(event.request).then(function(response) {
-        if (response) {
-                    return response;
-        }
-
-        return fetch(event.request).then(function(response) {
-          var shouldCache = response.ok;
-
-          for (var i = 0; i < BLACKLIST.length; ++i) {
-            var b = new RegExp(BLACKLIST[i]);
-            if (b.test(event.request.url)) {
-              shouldCache = false;
-              break;
-            }
-          }
-
-          if (event.request.method == 'POST') {
-            shouldCache = false;
-          }
-
-                    if (shouldCache) {
-            return caches.open(CACHENAME).then(function(cache) {
-              cache.put(event.request, response.clone());
-              return response;
-            });
-          } else {
-            return response;
-          }
-        });
-      })
-  );
-});
-
-
-
-if (!Cache.prototype.add) {
-
-  Cache.prototype.add = function add(request) {
-        return this.addAll([request]);
-  };
-}
-
-if (!Cache.prototype.addAll) {
-
-  Cache.prototype.addAll = function addAll(requests) {
-        var cache = this;
-
-        function NetworkError(message) {
-      this.name = 'NetworkError';
-      this.code = 19;
-      this.message = message;
+var pegus = {
+  checkClicked : function() {
+    var w = 100;
+    var h = 130;
+    if (mouseIsPressed && mouseX > this.x && mouseX < this.x + w && mouseY > this.y && mouseY < this.y + h) {
+      return true;
     }
-    NetworkError.prototype = Object.create(Error.prototype);
-
-    return Promise.resolve()
-        .then(function() {
-          if (arguments.length < 1) throw new TypeError();
-
-          requests = requests.map(function(request) {
-            if (request instanceof Request) {
-              return request;
-            } else {
-              return String(request);              }
-          });
-
-          return Promise.all(requests.map(function(request) {
-            if (typeof request === 'string') {
-              request = new Request(request);
-            }
-
-            return fetch(request.clone());
-          }));
-        })
-        .then(function(responses) {
-                              return Promise.all(responses.map(function(response, i) {
-            return cache.put(requests[i], response);
-          }));
-        })
-        .then(function() {
-          return undefined;
-        });
-  };
+    return false;
+  }
 }
 
-if (!CacheStorage.prototype.match) {
+function preload(){
+  steeImg = loadImage("Stee.jpg");
 
-  CacheStorage.prototype.match = function match(request, opts) {
-    var caches = this;
-    return caches.keys().then(function(cacheNames) {
-      var match;
-      return cacheNames.reduce(function(chain, cacheName) {
-        return chain.then(function() {
-          return match || caches.open(cacheName).then(function(cache) {
-            return cache.match(request, opts);
-          }).then(function(response) {
-            match = response;
-            return match;
-          });
-        });
-      }, Promise.resolve());
-    });
-  };
+  for (var i = 1; i <= 7; i++) {
+    levelImgs[i-1] = loadImage("lvl" + i + ".jpg");
+  }
+
+  for (var i = 1; i <= 7; i++){
+    pegusImgs[i-1] = loadImage("Pegus" + i + ".jpg");
+  }
+}
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  for (var i = 0; i < 500; i++) {
+    stee[i] = new Stee();
+  }
+
+}
+
+function draw(){
+ if (level == 1) {
+   lvl1();
+ }
+
+ else if (level == 2){
+   lvl2();
+ }
+
+ else if (level == 3){
+   lvl3();
+ }
+
+ else if (level == 4){
+   lvl4();
+ }
+
+ else if (level == 5){
+   lvl5();
+ }
+
+ else if (level == 6){
+   lvl6();
+ }
+
+ else if (level == 7){
+   lvl7();
+   if (showStee) {
+     for(var i = 0; i < stee.length; i++)
+      stee[i].display();
+    }
+ }
+}
+
+function  mousePressed() {
+  if(pegus.checkClicked()){
+    level++;
+  }
+
+  if (level == 7 && mouseX > 812 && mouseX < 900 && mouseY > 16 && mouseY < 150) {
+    showStee = true;
+  }
+}
+
+
+function lvl1(){
+  background(0);
+  image(levelImgs[0], width, height);
+  image(pegusImgs[0], pegus.x, pegus.y, pegusImgs[0].width*.48, pegusImgs[0].height*.46)
+  pegus.x = 555;
+  pegus.y = 120;
+  textSize(140)
+  fill(255)
+  text("wheres pegus?", 200, 100)
+  textSize(40)
+  fill(255)
+  text("click pegus' head to begin", 425, 650)
+}
+
+function lvl2(){
+  background(levelImgs[1]);
+  image(pegusImgs[1], pegus.x, pegus.y, pegusImgs[1].width*.08, pegusImgs[1].height*.06)
+  pegus.x = 280;
+  pegus.y = 435;
+}
+
+function lvl3(){
+  background(levelImgs[2]);
+  image(pegusImgs[2], pegus.x, pegus.y, pegusImgs[2].width*.09, pegusImgs[2].height*.07)
+  pegus.x = 183;
+  pegus.y = 335;
+}
+
+function lvl4(){
+  background(levelImgs[3]);
+  image(pegusImgs[3], pegus.x, pegus.y, pegusImgs[3].width*.06, pegusImgs[3].height*.04)
+  pegus.x = 690;
+  pegus.y = 230;
+}
+
+function lvl5(){
+  background(levelImgs[4]);
+  image(pegusImgs[4], pegus.x, pegus.y, pegusImgs[4].width*.07, pegusImgs[4].height*.05)
+  pegus.x = 1310;
+  pegus.y = 570;
+}
+
+function lvl6(){
+  background(levelImgs[5]);
+  image(pegusImgs[5], pegus.x, pegus.y, pegusImgs[5].width*.05, pegusImgs[5].height*.03)
+  pegus.x = 520;
+  pegus.y = 5;
+}
+
+function lvl7(){
+  background(0);
+  image(levelImgs[6], width/2 - levelImgs[6].width/2, height/2 - levelImgs[6].height/2);
+  image(pegusImgs[6], pegus.x, pegus.y, pegusImgs[6].width*.43, pegusImgs[6].height*.37);
+  pegus.x = 570;
+  pegus.y = -60;
+  image(steeImg, 821, 16, steeImg.width*.20, steeImg.height*.22)
+  textSize(120)
+  fill(255)
+  text("y", 30, 60)
+  fill(255)
+  text("o", 70, 135)
+  fill(255)
+  text("u", 100, 210)
+  fill(255)
+  text(" ", 130, 285)
+  fill(255)
+  text("f", 160, 360)
+  fill(255)
+  text("o", 190, 435)
+  fill(255)
+  text("u", 220, 510)
+  fill(255)
+  text("n", 250, 585)
+  fill(255)
+  text("d", 280, 660)
+  textSize(150)
+  fill(255)
+  text("p", 1000, 90)
+  fill(255)
+  text("e", 1060, 230)
+  fill(255)
+  text("g", 1120, 370)
+  fill(255)
+  text("u", 1180, 510)
+  fill(255)
+  text("s", 1240, 650)
+  textSize(20)
+  fill(255)
+  text("where steedo?", 1000, 640)
+}
+
+function Stee() {
+  this.x = random(0, width);
+  this.y = random(0, height);
+
+  this.display = function() {
+    image(steeImg, this.x, this.y, steeImg.width*.20, steeImg.height*.22);
+    this.x-=3;
+    if(this.x < 0) this.x = width;
+    this.y-=3;
+    if(this.y < 0) this.y = height;
+  }
 }
