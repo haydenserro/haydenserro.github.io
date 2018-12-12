@@ -6,6 +6,7 @@ var stee = [];
 var steeImg;
 var showStee = false;
 
+//check if Pegus clicked
 var pegus = {
   checkClicked : function() {
     var w = 100;
@@ -19,11 +20,11 @@ var pegus = {
 
 function preload(){
   steeImg = loadImage("Stee.jpg");
-
+//level advancer
   for (var i = 1; i <= 7; i++) {
     levelImgs[i-1] = loadImage("lvl" + i + ".jpg");
   }
-
+//the 7 pegus'
   for (var i = 1; i <= 7; i++){
     pegusImgs[i-1] = loadImage("Pegus" + i + ".jpg");
   }
@@ -31,6 +32,7 @@ function preload(){
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
+  //the 500 crazy stees
   for (var i = 0; i < 500; i++) {
     stee[i] = new Stee();
   }
@@ -38,30 +40,31 @@ function setup() {
 }
 
 function draw(){
+//level 1 statement
  if (level == 1) {
    lvl1();
  }
-
+//level 2 statement
  else if (level == 2){
    lvl2();
  }
-
+//level 3 statement
  else if (level == 3){
    lvl3();
  }
-
+//level 4 statement
  else if (level == 4){
    lvl4();
  }
-
+//level 5 statement
  else if (level == 5){
    lvl5();
  }
-
+//level 6 statement
  else if (level == 6){
    lvl6();
  }
-
+//level 7 statement
  else if (level == 7){
    lvl7();
    if (showStee) {
@@ -70,18 +73,17 @@ function draw(){
     }
  }
 }
-
+//when pegus clicked go to next level
 function  mousePressed() {
   if(pegus.checkClicked()){
     level++;
   }
-
+//where to click on stee for easteregg
   if (level == 7 && mouseX > 812 && mouseX < 900 && mouseY > 16 && mouseY < 150) {
     showStee = true;
   }
 }
-
-
+//level 1
 function lvl1(){
   background(0);
   image(levelImgs[0], width, height);
@@ -95,42 +97,42 @@ function lvl1(){
   fill(255)
   text("click pegus' head to begin", 425, 650)
 }
-
+//level 2
 function lvl2(){
   background(levelImgs[1]);
   image(pegusImgs[1], pegus.x, pegus.y, pegusImgs[1].width*.08, pegusImgs[1].height*.06)
   pegus.x = 280;
   pegus.y = 435;
 }
-
+//level 3
 function lvl3(){
   background(levelImgs[2]);
   image(pegusImgs[2], pegus.x, pegus.y, pegusImgs[2].width*.09, pegusImgs[2].height*.07)
   pegus.x = 183;
   pegus.y = 335;
 }
-
+//level 4
 function lvl4(){
   background(levelImgs[3]);
   image(pegusImgs[3], pegus.x, pegus.y, pegusImgs[3].width*.06, pegusImgs[3].height*.04)
   pegus.x = 690;
   pegus.y = 230;
 }
-
+//level 5
 function lvl5(){
   background(levelImgs[4]);
   image(pegusImgs[4], pegus.x, pegus.y, pegusImgs[4].width*.07, pegusImgs[4].height*.05)
   pegus.x = 1310;
   pegus.y = 570;
 }
-
+//level 6
 function lvl6(){
   background(levelImgs[5]);
   image(pegusImgs[5], pegus.x, pegus.y, pegusImgs[5].width*.05, pegusImgs[5].height*.03)
   pegus.x = 520;
   pegus.y = 5;
 }
-
+//level 7
 function lvl7(){
   background(0);
   image(levelImgs[6], width/2 - levelImgs[6].width/2, height/2 - levelImgs[6].height/2);
@@ -172,11 +174,11 @@ function lvl7(){
   fill(255)
   text("where steedo?", 1000, 640)
 }
-
+//stee placement
 function Stee() {
   this.x = random(0, width);
   this.y = random(0, height);
-
+//stee movement
   this.display = function() {
     image(steeImg, this.x, this.y, steeImg.width*.20, steeImg.height*.22);
     this.x-=3;
